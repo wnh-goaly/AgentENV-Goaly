@@ -417,6 +417,9 @@ impl FirecrackerSandboxConfig {
         self.common.mmds_metadata = Some(
             MmdsMetadata::new(launch_config.sandbox_id, launch_config.snapshot_id.clone())
                 .with_access_token(launch_config.envd_access_token.as_ref())
+                .with_logs_collector_address(
+                    ConfigManager::global_config().envd.logs_collector_address(),
+                )
                 .with_extra(launch_config.extra_mmds.clone()),
         );
         self.common.network_policy = launch_config.network.clone();

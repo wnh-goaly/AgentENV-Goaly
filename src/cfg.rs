@@ -272,6 +272,23 @@ pub struct EnvdConfig {
     pub init_timeout_secs: u64,
     #[config(default = 3u64)]
     pub poll_ms: u64,
+    /// URL that envd inside every sandbox POSTs its log lines to, including
+    /// each process's stdout/stderr chunks. Delivered to the guest as the MMDS
+    /// `address` field on every start, resume, and fork, so changing it needs
+    /// no template rebuild. Unset or blank leaves envd's exporter idle. The
+    /// URL must be reachable from the sandbox network (see `[network.egress]`).
+    #[config(env = "AENV_ENVD_LOGS_COLLECTOR_ADDRESS", parse_env = parse_trimmed_string)]
+    pub logs_collector_address: Option<String>,
+}
+
+impl EnvdConfig {
+    /// The collector URL to hand to envd, or `None` when unset or blank.
+    pub fn logs_collector_address(&self) -> Option<&str> {
+        self.logs_collector_address
+            .as_deref()
+            .map(str::trim)
+            .filter(|address| !address.is_empty())
+    }
 }
 
 #[derive(Clone, Config)]

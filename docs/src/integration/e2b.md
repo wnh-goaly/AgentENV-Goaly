@@ -135,6 +135,26 @@ sandbox.beta_pause()
 sandbox.kill()
 ```
 
+## Process output logs
+
+envd inside every sandbox can ship each process's stdout and stderr, together
+with its own log lines, to an HTTP collector. Set `[envd].logs_collector_address`
+(or `AENV_ENVD_LOGS_COLLECTOR_ADDRESS`) on the runtime nodes; AgentENV hands
+the URL to the guest through the MMDS `address` field on every start, resume,
+and fork, so existing templates pick it up without a rebuild. envd POSTs one
+JSON object per request, batched per process every 2 seconds or 64 KiB, for
+example:
+
+```json
+{"level":"info","logger":"process","event_type":"stderr",
+ "data":"Traceback (most recent call last):\n","timestamp":"2026-09-25T10:00:00Z",
+ "message":"Streaming process event","instanceID":"<sandbox-id>","envID":"<template-id>"}
+```
+
+The request carries no credentials; put the collector behind a URL only the
+sandbox network can reach, or embed a token in the URL. A private collector
+address also has to be allowed by `[network.egress]`.
+
 ## E2B CLI
 
 AgentENV is compatible with the E2B CLI, but we recommend using the

@@ -24,6 +24,7 @@ These variables are consumed by the repository's Docker Compose and Kubernetes h
 | `AENV_OBSERVABILITY_SCHEDULER_ENDPOINT` | unset | Override scheduler heartbeat reporting endpoint |
 | `AENV_OBSERVABILITY_REPORT_INTERVAL_SECS` | `5` | Override heartbeat reporting interval in seconds |
 | `AENV_CUSTOM_EXTENSION_URL` | unset | Override `[custom_extension].url`, the HTTP base URL of the custom extension service |
+| `AENV_ENVD_LOGS_COLLECTOR_ADDRESS` | unset | Override `[envd].logs_collector_address`, the URL envd inside each sandbox POSTs process stdout/stderr and its own log lines to |
 | `AENV_SANDBOX_ACCESS_TOKEN_HASH_SEED` | auto-generated under `$AENV_HOME/secrets` | Optional runtime override for the secret used to derive sandbox envd and traffic access tokens. Configure the same value on every runtime node in clustered deployments. |
 | `AENV_SANDBOX_PROXY_DOMAINS` | from config | Comma-separated DNS domains that enable server-side host-based sandbox proxy URLs like `{port}-{sandboxID}.{domain}` and populate the sandbox response `domain` field. Empty or unset keeps `[sandbox_proxy].domains`. |
 | `AENV_HOME_PATH` | `/var/lib/aenv` | Override the base directory from which AgentENV derives local state, caches, logs, generated configs, and downloaded dependencies. Component-specific path settings remain available as advanced overrides. |

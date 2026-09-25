@@ -747,6 +747,11 @@ impl FirecrackerSandbox {
         let metadata = mmds_metadata.get_or_insert_with(|| MmdsMetadata::new(id, "unknown"));
         metadata.sandbox_id = id.to_string();
         metadata.set_access_token(envd_access_token.as_ref());
+        // The snapshot carries the collector address of the node that took
+        // it; the current node's configuration wins on every restore.
+        metadata.set_logs_collector_address(
+            ConfigManager::global_config().envd.logs_collector_address(),
+        );
 
         debug!(
             vm_state_path = %snapshot.vm_state_path.display(),
@@ -813,6 +818,9 @@ impl FirecrackerSandbox {
         snapshot_config.common.mmds_metadata = Some(
             MmdsMetadata::new(launch_config.sandbox_id, launch_config.snapshot_id.clone())
                 .with_access_token(launch_config.envd_access_token.as_ref())
+                .with_logs_collector_address(
+                    ConfigManager::global_config().envd.logs_collector_address(),
+                )
                 .with_extra(launch_config.extra_mmds.clone()),
         );
         snapshot_config.common.envd_access_token = launch_config.envd_access_token.clone();

@@ -262,6 +262,7 @@ In-guest `envd` daemon settings.
 | `version` | string | `"0.5.15"` | Expected envd version baked into the tools drive image |
 | `init_timeout_secs` | integer | `60` | Max seconds to wait for envd to become ready after VM start |
 | `poll_ms` | integer | `3` | Poll interval (ms) for envd health check retries |
+| `logs_collector_address` | string | unset | URL that envd inside each sandbox POSTs its JSON log lines to, one line per request: each process's stdout/stderr chunks (fields `event_type`, `data`), process start/exit events, and envd's own logs, all tagged with `instanceID` (sandbox ID) and `envID` (template ID). Delivered through the MMDS `address` field on every start, resume, and fork, so a change applies to existing templates without a rebuild. Unset or blank leaves the exporter idle. Must be reachable from the sandbox network; add it to the egress allow list when it is a private address |
 
 ## `[sandbox]`
 

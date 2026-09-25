@@ -51,6 +51,16 @@ impl MmdsMetadata {
     pub(crate) fn set_access_token(&mut self, token: Option<&EnvdAccessToken>) {
         self.access_token_hash = hash_access_token(token.map_or("", EnvdAccessToken::expose));
     }
+
+    /// Set the URL envd POSTs its log lines to; `None` leaves the exporter idle.
+    pub(crate) fn with_logs_collector_address(mut self, address: Option<&str>) -> Self {
+        self.set_logs_collector_address(address);
+        self
+    }
+
+    pub(crate) fn set_logs_collector_address(&mut self, address: Option<&str>) {
+        self.logs_collector_address = address.unwrap_or_default().to_string();
+    }
 }
 
 fn hash_access_token(token: &str) -> String {
@@ -80,6 +90,20 @@ mod tests {
                 "accessTokenHash": hash_access_token(""),
             })
         );
+    }
+
+    #[test]
+    fn logs_collector_address_is_delivered_as_the_e2b_address_field() {
+        let sandbox_id = SandboxId::from_uuid(Uuid::nil());
+        let metadata = MmdsMetadata::new(sandbox_id, "snapshot-123")
+            .with_logs_collector_address(Some("https://logs.example/ingest"));
+
+        let value = serde_json::to_value(&metadata).expect("serialize metadata");
+        assert_eq!(value["address"], "https://logs.example/ingest");
+
+        let mut cleared = metadata;
+        cleared.set_logs_collector_address(None);
+        assert_eq!(cleared.logs_collector_address, "");
     }
 
     #[test]
