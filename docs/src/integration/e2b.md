@@ -153,7 +153,12 @@ example:
 
 The request carries no credentials; put the collector behind a URL only the
 sandbox network can reach, or embed a token in the URL. A private collector
-address also has to be allowed by `[network.egress]`.
+address also has to be allowed by `[network.egress]`. An HTTPS collector needs
+a trust store envd can use: tools drives built from this repository ship a CA
+bundle and run envd with `SSL_CERT_FILE` set to it, so the guest image does
+not need `ca-certificates`; older tools drives rely on the guest's
+`/etc/ssl/certs`, and a bare image logs `x509: certificate signed by unknown
+authority` in `/var/log/agentenv/envd.stderr.log` instead of shipping.
 
 ## E2B CLI
 

@@ -94,6 +94,11 @@ ARG TOOLS_VERSION
 COPY --chmod=0755 init /tools-rootfs/init
 COPY --chmod=0755 pivot-init /tools-rootfs/agentenv/pivot-init
 COPY --chmod=0755 --from=envd-builder /out/envd /tools-rootfs/agentenv/envd
+# A CA bundle for envd's own TLS clients (the HTTP log exporter). envd is a Go
+# binary and reads the trust store of the *user* image, which minimal images
+# (bare ubuntu, distroless, scratch) do not ship; pivot-init points envd at
+# this copy instead. Taken from the Debian builder stage's ca-certificates.
+COPY --chmod=0644 --from=envd-builder /etc/ssl/certs/ca-certificates.crt /tools-rootfs/agentenv/ca-certificates.crt
 
 RUN set -eux; \
     mkdir -p \

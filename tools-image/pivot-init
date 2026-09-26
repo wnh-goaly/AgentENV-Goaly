@@ -114,6 +114,16 @@ if [ ! -x /bin/sh ]; then
     $BB ln -sf /agentenv/bin/busybox /bin/sh
 fi
 
+# Minimal user images ship no CA trust store, which leaves envd's TLS clients
+# (the log exporter) and every HTTPS client in the guest unable to verify
+# anything. Point envd at the tools drive's bundle, and offer it to the guest
+# at the standard path only when the image has none of its own.
+export SSL_CERT_FILE=/agentenv/ca-certificates.crt
+if [ ! -e /etc/ssl/certs/ca-certificates.crt ] && [ ! -e /etc/ssl/cert.pem ]; then
+    $BB mkdir -p /etc/ssl/certs
+    $BB ln -sf /agentenv/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+fi
+
 # Some images may not provide /etc/passwd
 # at all, so bootstrap the root identity before envd starts.
 if [ ! -e /etc/passwd ]; then
@@ -145,6 +155,7 @@ generate_resolv_conf
 $BB cat > /run/sv/envd/run << 'RUNSV_EOF'
 #!/agentenv/bin/busybox sh
 exec 2>>/var/log/agentenv/envd.stderr.log  # append across restarts; unbounded but VM-ephemeral
+export SSL_CERT_FILE=/agentenv/ca-certificates.crt
 exec /agentenv/envd
 RUNSV_EOF
 $BB chmod 0755 /run/sv/envd/run

@@ -47,7 +47,10 @@ agentenv-tools:<TOOLS_VERSION>
 ## Versioning
 
 `TOOLS_VERSION` is the SemVer release of the complete drive, including envd,
-BusyBox, and the init scripts. Published versions are immutable: any byte-level
+BusyBox, the init scripts, and the CA bundle (`/agentenv/ca-certificates.crt`,
+copied from the Debian builder stage; envd runs with `SSL_CERT_FILE` pointing
+at it, and `pivot-init` links it to `/etc/ssl/certs/ca-certificates.crt` in
+guests that ship no trust store of their own). Published versions are immutable: any byte-level
 change requires a new version. `ENVD_REF` remains the upstream `e2b-dev/infra`
 ref used to compile envd and is not necessarily the same string as the version
 reported by the binary.
